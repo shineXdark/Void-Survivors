@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Neon Horde</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <canvas id="game-canvas" aria-label="Neon Horde game canvas"></canvas>
+
+    <div class="hud">
+      <div class="top-rack panel">
+        <div class="brand-block">
+          <p class="eyebrow">Deep space survival</p>
+          <div class="title-line">
+            <h1>Neon Horde</h1>
+            <span class="version-pill">v1.3.0</span>
+          </div>
+          <p class="subtitle">Pilot a neon saucer, outlast the alien swarm, and turn one good run into a ridiculous one.</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <span class="label">Level</span>
+            <strong id="level-value">1</strong>
+          </div>
+          <div class="stat-card">
+            <span class="label">Hull</span>
+            <strong id="hp-value">100 / 100</strong>
+          </div>
+          <div class="stat-card">
+            <span class="label">Time</span>
+            <strong id="timer-value">00:00</strong>
+          </div>
+          <div class="stat-card">
+            <span class="label">Swarm</span>
+            <strong id="enemy-value">0</strong>
+          </div>
+        </div>
+      </div>
+
+      <div class="bottom-rack">
+        <div class="panel tip-panel">
+          <span class="tip-dot"></span>
+          <span>UFO weapons online. Weave through the alien pack and vacuum up the dropped shards.</span>
+        </div>
+
+        <div class="panel xp-panel">
+          <div class="xp-header">
+            <span>Energy Core</span>
+            <span id="xp-text">0 / 8</span>
+          </div>
+          <div class="xp-track">
+            <div id="xp-fill" class="xp-fill"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="intro-overlay" class="overlay active">
+      <div class="panel modal intro-card">
+        <div id="menu-home" class="menu-screen">
+          <p class="eyebrow">Void breach detected</p>
+          <h2>Choose your pilot name before entering the breach.</h2>
+          <p>
+            Use <kbd>WASD</kbd> or <kbd>Arrow Keys</kbd> to drift through the arena. Your UFO auto-fires at nearby threats.
+            In multiplayer, you can host or join a lobby and play together from different devices through the same server.
+          </p>
+          <label class="field-block" for="player-name-input">
+            <span class="field-label">Pilot Name</span>
+            <input id="player-name-input" class="text-input" type="text" maxlength="18" placeholder="Enter your name">
+          </label>
+          <div class="intro-tags">
+            <span>Space arena</span>
+            <span>Readable alien silhouettes</span>
+            <span>Online lobby list</span>
+          </div>
+          <div class="action-row">
+            <button id="singleplayer-button" class="primary-button" type="button" disabled>Loading Visuals...</button>
+            <button id="multiplayer-button" class="secondary-button" type="button" disabled>Multiplayer</button>
+          </div>
+          <p id="menu-status" class="menu-status"></p>
+        </div>
+
+        <div id="menu-multiplayer" class="menu-screen hidden">
+          <p class="eyebrow">Multiplayer</p>
+          <h2>Host a lobby or join one already in orbit.</h2>
+          <p>Choose a lobby path below. Everyone connected to this same server will see open lobbies live in the join list.</p>
+          <div class="action-column">
+            <button id="host-game-button" class="primary-button" type="button">Host Game</button>
+            <button id="join-game-button" class="secondary-button" type="button">Join Game</button>
+            <button id="back-to-home-button" class="ghost-button" type="button">Back</button>
+          </div>
+        </div>
+
+        <div id="menu-join" class="menu-screen hidden">
+          <p class="eyebrow">Join Game</p>
+          <h2>Available lobbies</h2>
+          <p class="overlay-copy">Choose a live lobby from the list. Each entry shows the host name and current player count.</p>
+          <div id="lobby-list" class="lobby-list"></div>
+          <div class="action-row">
+            <button id="refresh-lobbies-button" class="secondary-button" type="button">Refresh</button>
+            <button id="back-to-multiplayer-button" class="ghost-button" type="button">Back</button>
+          </div>
+        </div>
+
+        <div id="menu-lobby" class="menu-screen hidden">
+          <p class="eyebrow">Lobby Ready</p>
+          <h2 id="lobby-title">Waiting in orbit</h2>
+          <p id="lobby-subtitle" class="overlay-copy">Invite your friends to this server and have them join your lobby from the list.</p>
+          <div class="lobby-meta">
+            <div class="lobby-chip">
+              <span class="chip-label">Lobby ID</span>
+              <strong id="lobby-id-value">------</strong>
+            </div>
+            <div class="lobby-chip">
+              <span class="chip-label">Players</span>
+              <strong id="lobby-count-value">1</strong>
+            </div>
+          </div>
+          <div id="lobby-player-list" class="player-list"></div>
+          <div class="action-row">
+            <button id="start-match-button" class="primary-button" type="button">Start Match</button>
+            <button id="leave-lobby-button" class="ghost-button" type="button">Leave Lobby</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="levelup-overlay" class="overlay hidden">
+      <div class="panel modal levelup-card">
+        <p class="eyebrow">Upgrade draft</p>
+        <h2>Choose your mutation</h2>
+        <p class="overlay-copy">Each pick bends the run in a different direction. Stack smart and snowball hard.</p>
+        <div id="upgrade-options" class="upgrade-grid"></div>
+      </div>
+    </div>
+
+    <div id="gameover-overlay" class="overlay hidden">
+      <div class="panel modal gameover-card">
+        <p class="eyebrow">Run complete</p>
+        <h2 id="gameover-title">You were overwhelmed.</h2>
+        <p id="gameover-summary" class="overlay-copy">Level 1. Time 00:00. Try another build.</p>
+        <button id="restart-button" class="primary-button" type="button">Restart Run</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="./game.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

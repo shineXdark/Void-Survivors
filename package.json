@@ -1,0 +1,18 @@
+{
+  "name": "neon-horde",
+  "version": "1.3.0",
+  "private": true,
+  "description": "A polished survivor-style browser game with auto-fire, XP shards, and random upgrades.",
+  "scripts": {
+    "generate:assets": "node ./scripts/generate-assets.mjs",
+    "start": "node ./server.js",
+    "serve": "node ./server.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "pureimage": "^0.4.18"
+  }
+}
